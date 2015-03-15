@@ -1,0 +1,40 @@
+#!/usr/bin/perl -W
+# java -cp ./bin core.Main 0 1 2 3
+
+# Constants
+#my $bin_dir = 'bin';
+my $build_settings = '.build_settings';
+
+# Global Variables
+my $main_class_path;
+
+if (!(-e $build_settings)) {
+	print("Error: '$build_settings' does not exist. Run the build script first!\n");
+	exit;
+} elsif (-z $build_settings) {
+	print("Error: '$build_settings' is empty. Run the build script first!\n");
+	exit;
+} elsif (!(-T $build_settings)) {
+	print("Error: '$build_settings' is not the correct format. Run the build script first!\n");
+	exit;
+} else {
+	read_build_settings();
+	#$tmp = $main_class_path #join(" ", @ARGV);
+	$main_class_path =~ m/(\.\/\w+)\/(.*).java/;
+	$bin_dir = $1;
+	$class = $2;
+	$class =~ s/\//./g;
+	$cmd = 'java -cp '.$bin_dir.' '.$class;
+	if ($#ARGV >= 0) {
+		$cmd .= ' '.join(' ', @ARGV);
+	}
+	system($cmd);
+}
+
+##### subroutines #####
+
+sub read_build_settings {
+	open(MAIN, '<', $build_settings) or die "Error: Unable to open $build_settings for read : $!\n";
+	$main_class_path = <MAIN>;
+	close(MAIN);
+}

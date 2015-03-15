@@ -1,0 +1,84 @@
+#!/usr/bin/perl -W
+#javac -cp . -d bin/ src/core/**/*.java
+
+# Constants
+my $src_dir = 'src';
+my $bin_dir = 'bin';
+my $build_settings = '.build_settings';
+
+# Global Variables
+my $main_class_name;
+my $main_class_path;
+my @src_dirs;
+
+if (!(-d $src_dir)) {
+	print("Error: Directory '$src_dir' not found.\n");
+	exit;
+}
+
+if (!(-e $build_settings) || -z $build_settings || !(-T $build_settings)) {
+	make_build_settings();
+} else {
+	read_build_settings();
+	#print($main_class_path, "\n");
+}
+
+if (!(-d $bin_dir)) {
+	mkdir $bin_dir;	
+}
+
+get_src_dirs();
+$cmd = "javac -cp . -d $bin_dir/ ".join(" ", @src_dirs);
+system($cmd);
+print "done.\n";
+
+##### subroutines #####
+
+sub make_build_settings {
+	print("Enter filename of main class (ex. Main.java): ");
+	$input = <>;
+	chop $input;
+	if (!($input =~ m/.+\.java$/)) {
+		print("Error: Filename must end with '.java'\n");
+		exit;
+	} else {
+		$main_class_name = $input;
+	}
+	get_main_class_path();
+	
+	if ($main_class_path eq "") {
+		print("Error: '$input' was not found.\n");
+		exit;
+	} else {
+		$main_class_path =~ /$src_dir(.*)/;
+		$main_class_path = './'.$bin_dir.$1;
+	}
+	
+	open(MAIN, '>', $build_settings) or die "Error: Unable to open $build_settings for write : $!\n";
+	print MAIN $main_class_path;
+	close(MAIN);
+}
+
+sub read_build_settings {
+	open(MAIN, '<', $build_settings) or die "Error: Unable to open $build_settings for read : $!\n";
+	$main_class_name = <MAIN>;
+	close(MAIN);
+}
+
+sub get_src_dirs {
+	@src_dirs = `find $src_dir -name '*.java' | grep '\\/\\w\\w*\\.java\$' | grep -o '.*/' | uniq | sed 's/\$/*.java/'`;
+	chop @src_dirs;
+}
+
+sub get_main_class_path {
+	$main_class_path = `find src | grep '.*/$main_class_name\$'`;
+}
+
+
+
+
+
+
+
+
+
