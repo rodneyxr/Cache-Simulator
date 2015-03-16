@@ -36,12 +36,16 @@ public class Main {
 		// TODO: validate the command line parameters
 		try {
 			cacheSize = Integer.parseInt(args[0]);
+			if (cacheSize <= 0)
+				error("Cache size cannot be 0 or less.");
 		} catch (NumberFormatException e) {
 			error("Invalid cacheSize.");
 		}
 
 		try {
 			blockSize = Integer.parseInt(args[1]);
+			if (blockSize > cacheSize)
+				error("Block size cannot be greater than the cache size.");
 		} catch (NumberFormatException e) {
 			error("Invalid blockSize.");
 		}
@@ -68,9 +72,9 @@ public class Main {
 
 		try {
 			while ((line = nextLine(buffer)) != null) {
-				System.out.println(line);
+				System.out.print(line);
 				MemoryAddress address = new MemoryAddress(line);
-				System.out.println("\t" + address);
+				System.out.println("\t\t" + address);
 			}
 		} catch (MemoryAddressException e) {
 			error(e.getMessage());
