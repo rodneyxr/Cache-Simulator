@@ -33,7 +33,6 @@ public class Main {
 		File inputFile = null;
 		FileReader fileReader = null;
 
-		// TODO: validate the command line parameters
 		try {
 			cacheSize = Integer.parseInt(args[0]);
 			if (cacheSize <= 0)
@@ -51,7 +50,13 @@ public class Main {
 		}
 
 		try {
-			isTracing = Boolean.parseBoolean(args[2]);
+			String traceFlag = args[2];
+			if (traceFlag.equalsIgnoreCase("on"))
+				isTracing = true;
+			else if (traceFlag.equalsIgnoreCase("off"))
+				isTracing = false;
+			else
+				throw new Exception("Invalid trace flag.");
 		} catch (Exception e) {
 			error(e.getMessage());
 		}
@@ -80,13 +85,19 @@ public class Main {
 			error(e.getMessage());
 		}
 
+		try {
+			buffer.close();
+			fileReader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		System.out.println("Rodney Rodriguez");
 		System.out.format("%s %s %s %s\n", args[0], args[1], args[2], args[3]);
 		System.out.format("memory accesses: %d\n", 0);
 		System.out.format("hits: %d\n", 0);
 		System.out.format("misses: %d\n", 0);
 		System.out.format("miss ratio: %.08f\n", 0f);
-
 	}
 
 	/**
