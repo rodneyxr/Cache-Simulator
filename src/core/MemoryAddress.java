@@ -4,8 +4,10 @@ public class MemoryAddress {
 
 	private static final String DEC_REGEX = "^[0-9]+$";
 	private static final String HEX_REGEX = "^(0[xX])?[0-9a-fA-F]+$";
+	private static final String ZERO_BITS = "00000000000000000000000000000000";
 
-	int address;
+	private int address;
+	private String bitString;
 
 	public MemoryAddress(String memoryAddress) throws MemoryAddressException {
 		memoryAddress = memoryAddress.trim().toLowerCase();
@@ -20,7 +22,22 @@ public class MemoryAddress {
 		}
 
 		if (address < 0)
-			throw new MemoryAddressException("Memory address cannot be negative.");
+			throw new MemoryAddressException(
+					"Memory address cannot be negative.");
+
+		String bitString = Integer.toBinaryString(address);
+
+		if (bitString.length() > 32)
+			throw new MemoryAddressException(
+					"Memory address cannot be greater than 32 bits.");
+
+		StringBuilder sb = new StringBuilder(ZERO_BITS);
+		sb.replace(sb.length() - bitString.length(), sb.length(), bitString);
+		this.bitString = sb.toString();
+	}
+
+	public String getBitString() {
+		return bitString;
 	}
 
 	private static boolean isDecimal(String s) {

@@ -8,8 +8,10 @@ import java.io.IOException;
 import core.MemoryAddress.MemoryAddressException;
 
 /**
- * A simple cache simulation program for a direct mapped cache. It will take 4 command-line parameters giving the size of the cache, the block size, a trace flag, and a file name giving the name of a
- * file containing memory addresses. The program will simulate the cache and calculate the hit ratio.
+ * A simple cache simulation program for a direct mapped cache. It will take 4
+ * command-line parameters giving the size of the cache, the block size, a trace
+ * flag, and a file name giving the name of a file containing memory addresses.
+ * The program will simulate the cache and calculate the hit ratio.
  * 
  * @author Rodney Rodriguez
  *
@@ -21,13 +23,18 @@ public class Main {
 			error("Usage: <cacheSize> <blockSize> <trace> <filename>");
 		}
 
-		int cacheSize = -1; // the log2 of the cache size. If n is 14, the cache contains 16K bytes.
-		int blockSize = -1; // the log2 of the block size. If m is 6, the block size is 64 bytes.
+		// the log2 of the cache size. If n is 14, the cache contains 16K bytes.
+		int cacheSize = -1;
+		// the log2 of the block size. If m is 6, the block size is 64 bytes.
+		int blockSize = -1;
 
 		/*
-		 * If tracing is on, the tracing output should appear in a table with columns right justified. Assume at most 32 bits for addresses, tags, and block numbers. Assume that counts of hits,
-		 * misses, and accesses require at most 7 decimal digits. Do not include commas with the decimal numbers. Each line of the table must be shorter than 80 characters and when printed, must
-		 * appear all on one line.
+		 * If tracing is on, the tracing output should appear in a table with
+		 * columns right justified. Assume at most 32 bits for addresses, tags,
+		 * and block numbers. Assume that counts of hits, misses, and accesses
+		 * require at most 7 decimal digits. Do not include commas with the
+		 * decimal numbers. Each line of the table must be shorter than 80
+		 * characters and when printed, must appear all on one line.
 		 */
 		boolean isTracing = false;
 		File inputFile = null;
@@ -75,11 +82,31 @@ public class Main {
 		BufferedReader buffer = new BufferedReader(fileReader);
 		String line;
 
+		if (isTracing) {
+			System.out.format("%9s%5s%7s%11s%10s%6s%8s%10s%12s\n", "address",
+					"tag", "block", "entry tag", "hit/miss", "hits", "misses",
+					"accesses", "miss ratio");
+		}
+
 		try {
 			while ((line = nextLine(buffer)) != null) {
-				System.out.print(line);
 				MemoryAddress address = new MemoryAddress(line);
-				System.out.println("\t\t" + address);
+
+				dmc.access(address);
+
+				if (isTracing) {
+					System.out.format("%9s%5s%7s%11s%10s%6s%8s%10s%12s\n",
+							address, // address
+							dmc.getLastTag(), // tag
+							"1", // block
+							"", // entry tag
+							dmc.wasLastHit() ? "hit" : "miss", // hit/miss
+							dmc.hits, // hits
+							dmc.misses, // misses
+							dmc.accesses, // accesses
+							String.format("%1.8f", dmc.getHitRatio())); // miss
+																		// ratio
+				}
 			}
 		} catch (MemoryAddressException e) {
 			error(e.getMessage());
@@ -99,7 +126,6 @@ public class Main {
 		System.out.format("misses: %d\n", 0);
 		System.out.format("miss ratio: %.08f\n", 0f);
 	}
-
 	/**
 	 * 
 	 * @param buffer
