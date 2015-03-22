@@ -1,5 +1,6 @@
 package core;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public abstract class Cache {
@@ -19,6 +20,11 @@ public abstract class Cache {
 
 	private boolean wasLastHit;
 	private int lastTag;
+	private int lastIndex;
+	private int lastOffset;
+	
+	private int lastBlockPosition;
+	private int lastBlockAddress;
 
 	public Cache(int log2CacheSize, int log2BlockSize) {
 		cacheSize = (int) Math.pow(2, log2CacheSize);
@@ -31,20 +37,27 @@ public abstract class Cache {
 		hits = 0;
 		misses = 0;
 		accesses = 0;
-
 		System.out.printf("Cache Created: tag=%d, index=%d, offset=%d\n",
 				tagBits, indexBits, offsetBits);
 	}
 
 	{
+		Arrays.fill();
 		lastTag = -1;
+		lastIndex = -1;
+		lastOffset = -1;
 	}
 
 	protected void access(MemoryAddress address) {
 		accesses++;
-		lastTag = Integer.valueOf(address.getBitString().substring(0, tagBits), 2);
+		int bitIndex = 0;
+		lastTag = Integer.valueOf(address.getBitString().substring(bitIndex, bitIndex += tagBits), 2);
+		lastIndex = Integer.valueOf(address.getBitString().substring(bitIndex, bitIndex += indexBits), 2);
+		lastOffset = Integer.valueOf(address.getBitString().substring(bitIndex, bitIndex += offsetBits), 2);
+		lastBlockPosition = lastTag + lastIndex;
+		lastBlockAddress = lastBlockPosition % numberOfBlocks;
 	}
-
+	
 	protected void hit() {
 		hits++;
 		wasLastHit = true;
