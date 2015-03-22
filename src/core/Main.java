@@ -83,7 +83,7 @@ public class Main {
 		String line;
 
 		if (isTracing) {
-			System.out.format("%9s%5s%7s%11s%10s%6s%8s%10s%12s\n", "address",
+			System.out.format("%8s%5s%7s%11s%10s%6s%8s%10s%12s\n", "address",
 					"tag", "block", "entry tag", "hit/miss", "hits", "misses",
 					"accesses", "miss ratio");
 		}
@@ -95,11 +95,11 @@ public class Main {
 				dmc.access(address);
 
 				if (isTracing) {
-					System.out.format("%9s%5s%7s%11s%10s%6s%8s%10s%12s\n",
+					System.out.format("%8s%5s%7s%11s%10s%6s%8s%10s%12s\n",
 							address, // address
 							dmc.getLastTag(), // tag
-							"1", // block
-							"", // entry tag
+							dmc.getLastBlock(), // block
+							dmc.getLastEntryTag(), // entry tag
 							dmc.wasLastHit() ? "hit" : "miss", // hit/miss
 							dmc.hits, // hits
 							dmc.misses, // misses
@@ -121,10 +121,10 @@ public class Main {
 
 		System.out.println("Rodney Rodriguez");
 		System.out.format("%s %s %s %s\n", args[0], args[1], args[2], args[3]);
-		System.out.format("memory accesses: %d\n", 0);
-		System.out.format("hits: %d\n", 0);
-		System.out.format("misses: %d\n", 0);
-		System.out.format("miss ratio: %.08f\n", 0f);
+		System.out.format("memory accesses: %d\n", dmc.accesses);
+		System.out.format("hits: %d\n", dmc.hits);
+		System.out.format("misses: %d\n", dmc.misses);
+		System.out.format("miss ratio: %.08f\n", dmc.getHitRatio());
 	}
 	/**
 	 * 
