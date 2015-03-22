@@ -1,14 +1,13 @@
 package core;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
 public abstract class Cache {
 
 	private final int cacheSize; // the number of bytes in the cache
 	private final int blockSize; // the number of bytes in a block
 	private final int numberOfBlocks; // the number of blocks in the cache
-	protected final HashMap<Integer, MemoryAddress> addresses;
+	protected final int[] tags;
 
 	protected int tagBits;
 	protected int indexBits;
@@ -30,15 +29,15 @@ public abstract class Cache {
 		cacheSize = (int) Math.pow(2, log2CacheSize);
 		blockSize = (int) Math.pow(2, log2BlockSize);
 		numberOfBlocks = cacheSize / blockSize;
-		addresses = new HashMap<Integer, MemoryAddress>(numberOfBlocks);
+		tags = new int[numberOfBlocks];
 		indexBits = log(numberOfBlocks, 2);
 		offsetBits = log2BlockSize;
 		tagBits = 32 - indexBits - offsetBits;
 		hits = 0;
 		misses = 0;
 		accesses = 0;
-		System.out.printf("Cache Created: tag=%d, index=%d, offset=%d\n",
-				tagBits, indexBits, offsetBits);
+
+		System.out.printf("Cache Created: tag=%d, index=%d, offset=%d\n", tagBits, indexBits, offsetBits);
 	}
 
 	{
@@ -88,7 +87,6 @@ public abstract class Cache {
 
 	@Override
 	public String toString() {
-		return String.format("[cacheSize=%d, blockSize=%d, numberOfBlocks=%d]",
-				cacheSize, blockSize, numberOfBlocks);
+		return String.format("[cacheSize=%d, blockSize=%d, numberOfBlocks=%d]", cacheSize, blockSize, numberOfBlocks);
 	}
 }
