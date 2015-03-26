@@ -30,7 +30,11 @@ public class DirectMappedCache extends Cache {
 		super.access(address);
 		int bitIndex = 0;
 		lastTag = Integer.valueOf(address.getBitString().substring(bitIndex, bitIndex += tagBits), 2);
+		try {
 		lastIndex = Integer.valueOf(address.getBitString().substring(bitIndex, bitIndex += indexBits), 2);
+		} catch (Exception e) {
+			lastIndex = 0;
+		}
 		lastOffset = Integer.valueOf(address.getBitString().substring(bitIndex, bitIndex += offsetBits), 2);
 		
 		lastBlockPosition = Integer.valueOf(address.getBitString().substring(0, tagBits + indexBits), 2);

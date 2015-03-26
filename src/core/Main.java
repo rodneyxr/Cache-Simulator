@@ -52,6 +52,8 @@ public class Main {
 			blockSize = Integer.parseInt(args[1]);
 			if (blockSize > cacheSize)
 				error("Block size cannot be greater than the cache size.");
+			if (blockSize < 1)
+				error("Block size cannot be 0 or less.");
 		} catch (NumberFormatException e) {
 			error("Invalid blockSize.");
 		}
