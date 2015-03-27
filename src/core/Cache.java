@@ -33,8 +33,6 @@ public abstract class Cache {
 		hits = 0;
 		misses = 0;
 		accesses = 0;
-//		System.out.printf("Cache Created: tag=%d, index=%d, offset=%d\n", tagBits, indexBits, offsetBits);
-//		System.out.println(this);
 	}
 
 	protected void access(MemoryAddress address) {
@@ -55,7 +53,6 @@ public abstract class Cache {
 		return wasLastHit;
 	}
 
-
 	public double getHitRatio() {
 		if (accesses == 0)
 			return 1.0d;
@@ -68,6 +65,7 @@ public abstract class Cache {
 
 	@Override
 	public String toString() {
-		return String.format("[cacheSize=%d, blockSize=%d, numberOfBlocks=%d]", cacheSize, blockSize, numberOfBlocks);
+		return String.format("[cacheSize=%d, blockSize=%d, numberOfBlocks=%d]", 
+				cacheSize, blockSize, numberOfBlocks);
 	}
 }

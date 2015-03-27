@@ -11,7 +11,7 @@ import core.MemoryAddress.MemoryAddressException;
  * A simple cache simulation program for a direct mapped cache. It will take 4
  * command-line parameters giving the size of the cache, the block size, a trace
  * flag, and a file name giving the name of a file containing memory addresses.
- * The program will simulate the cache and calculate the hit ratio.
+ * The program will simulate the cache and calculate the miss ratio.
  * 
  * @author Rodney Rodriguez
  *
@@ -27,15 +27,6 @@ public class Main {
 		int cacheSize = -1;
 		// the log2 of the block size. If m is 6, the block size is 64 bytes.
 		int blockSize = -1;
-
-		/*
-		 * If tracing is on, the tracing output should appear in a table with
-		 * columns right justified. Assume at most 32 bits for addresses, tags,
-		 * and block numbers. Assume that counts of hits, misses, and accesses
-		 * require at most 7 decimal digits. Do not include commas with the
-		 * decimal numbers. Each line of the table must be shorter than 80
-		 * characters and when printed, must appear all on one line.
-		 */
 		boolean isTracing = false;
 		File inputFile = null;
 		FileReader fileReader = null;
