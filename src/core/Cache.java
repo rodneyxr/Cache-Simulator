@@ -5,7 +5,7 @@ import java.util.Arrays;
 public abstract class Cache {
 
 	public static final byte EMPTY = -1;
-	
+
 	private final int cacheSize; // the number of bytes in the cache
 	private final int blockSize; // the number of bytes in a block
 	protected final int numberOfBlocks; // the number of blocks in the cache
@@ -38,7 +38,7 @@ public abstract class Cache {
 	protected void access(MemoryAddress address) {
 		accesses++;
 	}
-	
+
 	protected void hit() {
 		hits++;
 		wasLastHit = true;
@@ -65,7 +65,7 @@ public abstract class Cache {
 
 	@Override
 	public String toString() {
-		return String.format("[cacheSize=%d, blockSize=%d, numberOfBlocks=%d]", 
+		return String.format("[cacheSize=%d, blockSize=%d, numberOfBlocks=%d]",
 				cacheSize, blockSize, numberOfBlocks);
 	}
 }

@@ -27,7 +27,10 @@ public class Main {
 		int cacheSize = -1;
 		// the log2 of the block size. If m is 6, the block size is 64 bytes.
 		int blockSize = -1;
+		int associativity = -1;
+		
 		boolean isTracing = false;
+		
 		File inputFile = null;
 		FileReader fileReader = null;
 
