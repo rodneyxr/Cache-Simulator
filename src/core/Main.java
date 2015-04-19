@@ -18,6 +18,7 @@ import core.MemoryAddress.MemoryAddressException;
  */
 public class Main {
 
+	// 16 6 on memory-small.txt
 	public static void main(String[] args) {
 		if (args.length != 4) {
 			error("Usage: <cacheSize> <blockSize> <trace> <filename>");
