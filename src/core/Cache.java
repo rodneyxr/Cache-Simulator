@@ -1,70 +1,62 @@
 package core;
 
-import java.util.Arrays;
+public class Cache extends BaseCache {
 
-public abstract class Cache {
+	private int lastTag;
+	private int lastIndex;
+	private int lastOffset;
 
-	public static final byte EMPTY = -1;
+	private int lastBlockPosition;
+	private int lastBlockAddress;
+	private int lastEntryTag;
 
-	private final int cacheSize; // the number of bytes in the cache
-	private final int blockSize; // the number of bytes in a block
-	protected final int numberOfBlocks; // the number of blocks in the cache
-	protected final int[] tags;
-
-	protected int tagBits;
-	protected int indexBits;
-	protected int offsetBits;
-
-	protected int hits;
-	protected int misses;
-	protected int accesses;
-
-	private boolean wasLastHit;
-
-	public Cache(int log2CacheSize, int log2BlockSize) {
-		cacheSize = (int) Math.pow(2, log2CacheSize);
-		blockSize = (int) Math.pow(2, log2BlockSize);
-		numberOfBlocks = cacheSize / blockSize;
-		tags = new int[numberOfBlocks];
-		Arrays.fill(tags, EMPTY);
-		indexBits = log(numberOfBlocks, 2);
-		offsetBits = log2BlockSize;
-		tagBits = 32 - indexBits - offsetBits;
-		hits = 0;
-		misses = 0;
-		accesses = 0;
-	}
-
-	protected void access(MemoryAddress address) {
-		accesses++;
-	}
-
-	protected void hit() {
-		hits++;
-		wasLastHit = true;
-	}
-
-	protected void miss() {
-		misses++;
-		wasLastHit = false;
-	}
-
-	public boolean wasLastHit() {
-		return wasLastHit;
-	}
-
-	public double getHitRatio() {
-		if (accesses == 0)
-			return 1.0d;
-		return (double) misses / (double) accesses;
-	}
-
-	private int log(int x, int base) {
-		return (int) Math.ceil((Math.log(x) / Math.log(base)));
+	public Cache(int cacheSize, int blockSize, int associativity, ReplacementPolicy replacementPolicy) {
+		super(cacheSize, blockSize, associativity, replacementPolicy);
+		lastTag = EMPTY;
+		lastIndex = EMPTY;
+		lastOffset = EMPTY;
+		lastEntryTag = EMPTY;
 	}
 
 	@Override
-	public String toString() {
-		return String.format("[cacheSize=%d, blockSize=%d, numberOfBlocks=%d]", cacheSize, blockSize, numberOfBlocks);
+	public void access(MemoryAddress address) {
+		super.access(address);
+		int bitIndex = 0;
+		lastTag = Integer.valueOf(address.getBitString().substring(bitIndex, bitIndex += tagBits), 2);
+		try {
+			lastIndex = Integer.valueOf(address.getBitString().substring(bitIndex, bitIndex += indexBits), 2);
+		} catch (Exception e) {
+			lastIndex = 0;
+		}
+		lastOffset = Integer.valueOf(address.getBitString().substring(bitIndex, bitIndex += offsetBits), 2);
+		lastBlockPosition = Integer.valueOf(address.getBitString().substring(0, tagBits + indexBits), 2);
+		lastBlockAddress = lastBlockPosition % numberOfBlocks;
+
+		lastEntryTag = tags[lastBlockAddress];
+
+		if (lastEntryTag == EMPTY) {
+			tags[lastBlockAddress] = lastTag;
+			miss();
+		} else if (lastEntryTag == lastTag) {
+			hit();
+		} else {
+			tags[lastBlockAddress] = lastTag;
+			miss();
+		}
 	}
+
+	public String getLastTag() {
+		return Integer.toHexString(lastTag);
+	}
+
+	public String getLastBlock() {
+		return Integer.toHexString(lastBlockAddress);
+	}
+
+	public String getLastEntryTag() {
+		if (lastEntryTag == EMPTY)
+			return "";
+		return Integer.toHexString(lastEntryTag);
+	}
+
 }

@@ -8,10 +8,8 @@ import java.io.IOException;
 import core.MemoryAddress.MemoryAddressException;
 
 /**
- * A simple cache simulation program for a direct mapped cache. It will take 6
- * command-line parameters giving the size of the cache, the block size, a trace
- * flag, and a file name giving the name of a file containing memory addresses.
- * The program will simulate the cache and calculate the miss ratio.
+ * A simple cache simulation program for a direct mapped cache. It will take 6 command-line parameters giving the size of the cache, the block size, a trace flag, and a file name
+ * giving the name of a file containing memory addresses. The program will simulate the cache and calculate the miss ratio.
  * 
  * @author Rodney Rodriguez
  *
@@ -31,7 +29,7 @@ public class Main {
 		int associativity = -1;
 
 		boolean isTracing = false;
-		boolean isFIFO = true;
+		ReplacementPolicy replacementPolicy = null;
 
 		File inputFile = null;
 		FileReader fileReader = null;
@@ -65,9 +63,9 @@ public class Main {
 		try {
 			String replacement = args[3];
 			if (replacement.equalsIgnoreCase("fifo"))
-				isFIFO = true;
+				replacementPolicy = ReplacementPolicy.FIFO;
 			else if (replacement.equalsIgnoreCase("lru"))
-				isFIFO = false;
+				replacementPolicy = ReplacementPolicy.LRU;
 			else
 				throw new Exception("Invalid replacement policy.");
 		} catch (Exception e) {
@@ -95,13 +93,13 @@ public class Main {
 			error(e.getMessage());
 		}
 
-		DirectMappedCache dmc = new DirectMappedCache(cacheSize, blockSize);
+		Cache cache = new Cache(cacheSize, blockSize, associativity, replacementPolicy);
 
 		BufferedReader buffer = new BufferedReader(fileReader);
 		String line;
 
-		final String FORMAT = "%8s %8s %8s %5s %6s %8s %10s %11s %s\n";
-		
+		final String FORMAT = "%8s %8s %8s %5s %8s %8s %10s %11s %s\n";
+
 		if (isTracing) {
 			System.out.format(FORMAT, "address", "tag", "set", "h/m", "hits", "misses", "accesses", "miss_ratio", "tags");
 		}
@@ -110,21 +108,20 @@ public class Main {
 			while ((line = nextLine(buffer)) != null) {
 				MemoryAddress address = new MemoryAddress(line);
 
-				dmc.access(address);
+				cache.access(address);
 
 				if (isTracing) {
-					System.out.format(FORMAT, 
-							address, // address
-							dmc.getLastTag(), // tag
-							dmc.getLastBlock(), // block
-							//dmc.getLastEntryTag(), // entry tag
-							dmc.wasLastHit() ? "hit" : "miss", // hit/miss
-							dmc.hits, // hits
-							dmc.misses, // misses
-							dmc.accesses, // accesses
-							String.format("%1.8f", dmc.getHitRatio()), // miss ratio
+					System.out.format(FORMAT, address, // address
+							cache.getLastTag(), // tag
+							cache.getLastBlock(), // block
+							// dmc.getLastEntryTag(), // entry tag
+							cache.wasLastHit() ? "hit" : "miss", // hit/miss
+							cache.hits, // hits
+							cache.misses, // misses
+							cache.accesses, // accesses
+							String.format("%1.8f", cache.getHitRatio()), // miss ratio
 							"tags"); // TODO: add tags
-				}		
+				}
 			}
 		} catch (MemoryAddressException e) {
 			error(e.getMessage());
@@ -139,10 +136,10 @@ public class Main {
 
 		System.out.println("Rodney Rodriguez");
 		System.out.format("%s %s %s %s %s %s\n", args[0], args[1], args[2], args[3], args[4], args[5]);
-		System.out.format("memory accesses: %d\n", dmc.accesses);
-		System.out.format("hits: %d\n", dmc.hits);
-		System.out.format("misses: %d\n", dmc.misses);
-		System.out.format("miss ratio: %.08f\n", dmc.getHitRatio());
+		System.out.format("memory accesses: %d\n", cache.accesses);
+		System.out.format("hits: %d\n", cache.hits);
+		System.out.format("misses: %d\n", cache.misses);
+		System.out.format("miss ratio: %.08f\n", cache.getHitRatio());
 	}
 
 	/**
