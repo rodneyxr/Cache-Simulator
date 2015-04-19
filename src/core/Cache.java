@@ -65,7 +65,6 @@ public abstract class Cache {
 
 	@Override
 	public String toString() {
-		return String.format("[cacheSize=%d, blockSize=%d, numberOfBlocks=%d]",
-				cacheSize, blockSize, numberOfBlocks);
+		return String.format("[cacheSize=%d, blockSize=%d, numberOfBlocks=%d]", cacheSize, blockSize, numberOfBlocks);
 	}
 }

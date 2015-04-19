@@ -1,6 +1,6 @@
 package core;
 
-public class DirectMappedCache extends Cache {
+public class LRUCache extends Cache {
 
 	private int lastTag;
 	private int lastIndex;
@@ -10,7 +10,7 @@ public class DirectMappedCache extends Cache {
 	private int lastBlockAddress;
 	private int lastEntryTag;
 
-	public DirectMappedCache(int cacheSize, int blockSize) {
+	public LRUCache(int cacheSize, int blockSize) {
 		super(cacheSize, blockSize);
 		lastTag = EMPTY;
 		lastIndex = EMPTY;

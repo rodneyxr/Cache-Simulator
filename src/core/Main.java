@@ -8,7 +8,7 @@ import java.io.IOException;
 import core.MemoryAddress.MemoryAddressException;
 
 /**
- * A simple cache simulation program for a direct mapped cache. It will take 4
+ * A simple cache simulation program for a direct mapped cache. It will take 6
  * command-line parameters giving the size of the cache, the block size, a trace
  * flag, and a file name giving the name of a file containing memory addresses.
  * The program will simulate the cache and calculate the miss ratio.
@@ -18,9 +18,10 @@ import core.MemoryAddress.MemoryAddressException;
  */
 public class Main {
 
+	// 16 6 0 fifo on memory-small.txt
 	public static void main(String[] args) {
-		if (args.length != 4) {
-			error("Usage: <cacheSize> <blockSize> <trace> <filename>");
+		if (args.length != 6) {
+			error("Usage: <cacheSize> <blockSize> <associativity> <fifo/lru> <trace> <filename>");
 		}
 
 		// the log2 of the cache size. If n is 14, the cache contains 16K bytes.
@@ -28,9 +29,10 @@ public class Main {
 		// the log2 of the block size. If m is 6, the block size is 64 bytes.
 		int blockSize = -1;
 		int associativity = -1;
-		
+
 		boolean isTracing = false;
-		
+		boolean isFIFO = true;
+
 		File inputFile = null;
 		FileReader fileReader = null;
 
@@ -53,7 +55,27 @@ public class Main {
 		}
 
 		try {
-			String traceFlag = args[2];
+			associativity = Integer.parseInt(args[2]);
+			if (associativity < 0 || associativity > cacheSize - blockSize)
+				associativity = cacheSize - blockSize;
+		} catch (NumberFormatException e) {
+			error("Invalid associativity");
+		}
+
+		try {
+			String replacement = args[3];
+			if (replacement.equalsIgnoreCase("fifo"))
+				isFIFO = true;
+			else if (replacement.equalsIgnoreCase("lru"))
+				isFIFO = false;
+			else
+				throw new Exception("Invalid replacement policy.");
+		} catch (Exception e) {
+			error(e.getMessage());
+		}
+
+		try {
+			String traceFlag = args[4];
 			if (traceFlag.equalsIgnoreCase("on"))
 				isTracing = true;
 			else if (traceFlag.equalsIgnoreCase("off"))
@@ -65,7 +87,7 @@ public class Main {
 		}
 
 		try {
-			inputFile = new File(args[3]);
+			inputFile = new File(args[5]);
 			if (!inputFile.exists())
 				throw new Exception("File does not exist.");
 			fileReader = new FileReader(inputFile);
@@ -78,10 +100,10 @@ public class Main {
 		BufferedReader buffer = new BufferedReader(fileReader);
 		String line;
 
+		final String FORMAT = "%8s %8s %8s %5s %6s %8s %10s %11s %s\n";
+		
 		if (isTracing) {
-			System.out.format("%8s%5s%7s%11s%10s%6s%8s%10s%12s\n", "address",
-					"tag", "block", "entry tag", "hit/miss", "hits", "misses",
-					"accesses", "miss ratio");
+			System.out.format(FORMAT, "address", "tag", "set", "h/m", "hits", "misses", "accesses", "miss_ratio", "tags");
 		}
 
 		try {
@@ -91,18 +113,18 @@ public class Main {
 				dmc.access(address);
 
 				if (isTracing) {
-					System.out.format("%8s%5s%7s%11s%10s%6s%8s%10s%12s\n",
+					System.out.format(FORMAT, 
 							address, // address
 							dmc.getLastTag(), // tag
 							dmc.getLastBlock(), // block
-							dmc.getLastEntryTag(), // entry tag
+							//dmc.getLastEntryTag(), // entry tag
 							dmc.wasLastHit() ? "hit" : "miss", // hit/miss
 							dmc.hits, // hits
 							dmc.misses, // misses
 							dmc.accesses, // accesses
-							String.format("%1.8f", dmc.getHitRatio())); // miss
-																		// ratio
-				}
+							String.format("%1.8f", dmc.getHitRatio()), // miss ratio
+							"tags"); // TODO: add tags
+				}		
 			}
 		} catch (MemoryAddressException e) {
 			error(e.getMessage());
@@ -116,12 +138,13 @@ public class Main {
 		}
 
 		System.out.println("Rodney Rodriguez");
-		System.out.format("%s %s %s %s\n", args[0], args[1], args[2], args[3]);
+		System.out.format("%s %s %s %s %s %s\n", args[0], args[1], args[2], args[3], args[4], args[5]);
 		System.out.format("memory accesses: %d\n", dmc.accesses);
 		System.out.format("hits: %d\n", dmc.hits);
 		System.out.format("misses: %d\n", dmc.misses);
 		System.out.format("miss ratio: %.08f\n", dmc.getHitRatio());
 	}
+
 	/**
 	 * 
 	 * @param buffer
