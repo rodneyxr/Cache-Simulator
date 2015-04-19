@@ -8,6 +8,7 @@ public class MemoryAddress {
 
 	private int address;
 	private String bitString;
+	private int lastAccessTime = 0;
 
 	public MemoryAddress(String memoryAddress) throws MemoryAddressException {
 		memoryAddress = memoryAddress.trim().toLowerCase();

@@ -6,9 +6,10 @@ public class Cache extends BaseCache {
 	private int lastIndex;
 	private int lastOffset;
 
-	private int lastBlockPosition;
+	// private int lastBlockPosition;
 	private int lastBlockAddress;
 	private int lastEntryTag;
+	private MemoryAddress lastAddress;
 
 	public Cache(int cacheSize, int blockSize, int associativity, ReplacementPolicy replacementPolicy) {
 		super(cacheSize, blockSize, associativity, replacementPolicy);
@@ -21,26 +22,25 @@ public class Cache extends BaseCache {
 	@Override
 	public void access(MemoryAddress address) {
 		super.access(address);
-		int bitIndex = 0;
-		lastTag = Integer.valueOf(address.getBitString().substring(bitIndex, bitIndex += tagBits), 2);
-		try {
-			lastIndex = Integer.valueOf(address.getBitString().substring(bitIndex, bitIndex += indexBits), 2);
-		} catch (Exception e) {
-			lastIndex = 0;
-		}
-		lastOffset = Integer.valueOf(address.getBitString().substring(bitIndex, bitIndex += offsetBits), 2);
-		lastBlockPosition = Integer.valueOf(address.getBitString().substring(0, tagBits + indexBits), 2);
-		lastBlockAddress = lastBlockPosition % numberOfBlocks;
+		lastTag = getTag(address);
+		lastIndex = getIndex(address);
+		lastOffset = getOffset(address);
+		int blockPosition = getBlockPosition(address);
+		lastBlockAddress = blockPosition % numberOfBlocks;
 
-		lastEntryTag = tags[lastBlockAddress];
+		if (addresses[lastBlockAddress] != null)
+			lastEntryTag = getTag(addresses[lastBlockAddress]);
+		else
+			lastEntryTag = EMPTY;
+		lastAddress = address;
 
 		if (lastEntryTag == EMPTY) {
-			tags[lastBlockAddress] = lastTag;
+			addresses[lastBlockAddress] = lastAddress;
 			miss();
 		} else if (lastEntryTag == lastTag) {
 			hit();
 		} else {
-			tags[lastBlockAddress] = lastTag;
+			addresses[lastBlockAddress] = lastAddress;
 			miss();
 		}
 	}
@@ -57,6 +57,18 @@ public class Cache extends BaseCache {
 		if (lastEntryTag == EMPTY)
 			return "";
 		return Integer.toHexString(lastEntryTag);
+	}
+
+	public void printLastAccess() {
+		System.out.format(Main.FORMAT, lastAddress, // address
+				getLastTag(), // tag
+				getLastBlock(), // block
+				wasLastHit() ? "hit" : "miss", // hit/miss
+				hits, // hits
+				misses, // misses
+				accesses, // accesses
+				String.format("%1.8f", getHitRatio()), // miss ratio
+				getLastEntryTag()); // TODO: add tags
 	}
 
 }

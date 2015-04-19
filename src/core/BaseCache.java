@@ -8,11 +8,13 @@ public class BaseCache {
 
 	private final int cacheSize; // the number of bytes in the cache
 	private final int blockSize; // the number of bytes in a block
+	private final int setSize; // the number of bytes in a set
 	private final int associativity;
 	private final ReplacementPolicy replacementPolicy;
 
 	protected final int numberOfBlocks; // the number of blocks in the cache
-	protected final int[] tags;
+	protected final int numberOfSets; // the number of sets in the cache
+	protected final MemoryAddress[] addresses;
 
 	protected int tagBits;
 	protected int indexBits;
@@ -25,19 +27,22 @@ public class BaseCache {
 	private boolean wasLastHit;
 
 	public BaseCache(int log2CacheSize, int log2BlockSize, int log2Associativity, ReplacementPolicy replacementPolicy) {
-		cacheSize = (int) Math.pow(2, log2CacheSize);
-		blockSize = (int) Math.pow(2, log2BlockSize);
-		associativity = (int) Math.pow(2, log2Associativity);
+		this.cacheSize = (int) Math.pow(2, log2CacheSize);
+		this.blockSize = (int) Math.pow(2, log2BlockSize);
+		this.associativity = (int) Math.pow(2, log2Associativity);
 		this.replacementPolicy = replacementPolicy;
-		numberOfBlocks = cacheSize / blockSize;
-		tags = new int[numberOfBlocks];
-		Arrays.fill(tags, EMPTY);
-		indexBits = log(numberOfBlocks, 2);
-		offsetBits = log2BlockSize;
-		tagBits = 32 - indexBits - offsetBits;
-		hits = 0;
-		misses = 0;
-		accesses = 0;
+		this.numberOfBlocks = cacheSize / blockSize;
+		this.setSize = blockSize * associativity;
+		this.numberOfSets = cacheSize / setSize;
+
+		this.addresses = new MemoryAddress[numberOfBlocks];
+		Arrays.fill(addresses, null);
+		this.indexBits = log(numberOfBlocks, 2);
+		this.offsetBits = log2BlockSize;
+		this.tagBits = 32 - indexBits - offsetBits;
+		this.hits = 0;
+		this.misses = 0;
+		this.accesses = 0;
 	}
 
 	protected void access(MemoryAddress address) {
@@ -62,6 +67,42 @@ public class BaseCache {
 		if (accesses == 0)
 			return 1.0d;
 		return (double) misses / (double) accesses;
+	}
+
+	protected int getBlockPosition(MemoryAddress address) {
+		if (tagBits + indexBits == 0)
+			return 0;
+		int blockPositition = EMPTY;
+		blockPositition = Integer.valueOf(address.getBitString().substring(0, tagBits + indexBits), 2);
+		return blockPositition;
+	}
+
+	protected int getTag(MemoryAddress address) {
+		if (tagBits == 0)
+			return 0;
+		int tag = EMPTY;
+		tag = Integer.valueOf(address.getBitString().substring(0, tagBits), 2);
+		return tag;
+	}
+
+	protected int getIndex(MemoryAddress address) {
+		if (indexBits == 0)
+			return 0;
+		int index = EMPTY;
+		int start = tagBits;
+		int end = start + indexBits;
+		index = Integer.valueOf(address.getBitString().substring(start, end), 2);
+		return index;
+	}
+
+	protected int getOffset(MemoryAddress address) {
+		if (offsetBits == 0)
+			return 0;
+		int offset = EMPTY;
+		int start = tagBits + indexBits;
+		int end = start + offsetBits;
+		offset = Integer.valueOf(address.getBitString().substring(start, end), 2);
+		return offset;
 	}
 
 	private int log(int x, int base) {

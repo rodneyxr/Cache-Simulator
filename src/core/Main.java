@@ -16,6 +16,8 @@ import core.MemoryAddress.MemoryAddressException;
  */
 public class Main {
 
+	public static final String FORMAT = "%8s %8s %8s %5s %8s %8s %10s %11s %s\n";
+	
 	// 16 6 0 fifo on memory-small.txt
 	public static void main(String[] args) {
 		if (args.length != 6) {
@@ -98,7 +100,7 @@ public class Main {
 		BufferedReader buffer = new BufferedReader(fileReader);
 		String line;
 
-		final String FORMAT = "%8s %8s %8s %5s %8s %8s %10s %11s %s\n";
+		
 
 		if (isTracing) {
 			System.out.format(FORMAT, "address", "tag", "set", "h/m", "hits", "misses", "accesses", "miss_ratio", "tags");
@@ -111,16 +113,17 @@ public class Main {
 				cache.access(address);
 
 				if (isTracing) {
-					System.out.format(FORMAT, address, // address
-							cache.getLastTag(), // tag
-							cache.getLastBlock(), // block
-							// dmc.getLastEntryTag(), // entry tag
-							cache.wasLastHit() ? "hit" : "miss", // hit/miss
-							cache.hits, // hits
-							cache.misses, // misses
-							cache.accesses, // accesses
-							String.format("%1.8f", cache.getHitRatio()), // miss ratio
-							"tags"); // TODO: add tags
+					cache.printLastAccess();
+//					System.out.format(FORMAT, address, // address
+//							cache.getLastTag(), // tag
+//							cache.getLastBlock(), // block
+//							// dmc.getLastEntryTag(), // entry tag
+//							cache.wasLastHit() ? "hit" : "miss", // hit/miss
+//							cache.hits, // hits
+//							cache.misses, // misses
+//							cache.accesses, // accesses
+//							String.format("%1.8f", cache.getHitRatio()), // miss ratio
+//							"tags"); // TODO: add tags
 				}
 			}
 		} catch (MemoryAddressException e) {
