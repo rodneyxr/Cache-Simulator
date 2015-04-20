@@ -114,16 +114,6 @@ public class Main {
 
 				if (isTracing) {
 					cache.printLastAccess();
-//					System.out.format(FORMAT, address, // address
-//							cache.getLastTag(), // tag
-//							cache.getLastBlock(), // block
-//							// dmc.getLastEntryTag(), // entry tag
-//							cache.wasLastHit() ? "hit" : "miss", // hit/miss
-//							cache.hits, // hits
-//							cache.misses, // misses
-//							cache.accesses, // accesses
-//							String.format("%1.8f", cache.getHitRatio()), // miss ratio
-//							"tags"); // TODO: add tags
 				}
 			}
 		} catch (MemoryAddressException e) {

@@ -50,6 +50,14 @@ public class MemoryAddress {
 	public static boolean isValid(String s) {
 		return (isHex(s) || isDecimal(s)) && !s.contains("-");
 	}
+	
+	public int getLastAccessTime() {
+		return lastAccessTime;
+	}
+	
+	public void setLastAccessTime(int lastAccessTime) {
+		this.lastAccessTime = lastAccessTime;
+	}
 
 	@Override
 	public String toString() {
