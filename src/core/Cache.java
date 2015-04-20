@@ -38,13 +38,13 @@ public class Cache extends BaseCache {
 			tmpList[0] = address;
 			miss();
 		} else if (lastEntryTag == lastTag) {
-			// TODO: if LRU update access time
 			// TODO: search for address if not in there then miss?
 			if (RP == ReplacementPolicy.LRU) {
 				address.setLastAccessTime(accesses);
 				tmpList[0] = address;
 				lastAddressList[0] = address;
-				//lastAddressList = tmpList.clone();
+			} else if (RP == ReplacementPolicy.FIFO) {
+				// lastAddressList[0]
 			}
 			hit();
 		} else {
@@ -63,7 +63,7 @@ public class Cache extends BaseCache {
 				// find oldest access time if full
 				// else put into first empty block
 			} else if (RP == ReplacementPolicy.LRU) {
-				// replace last
+				// replace last used
 				for (int i = 0; i < ASSOCIATIVITY; i++) {
 					if (tmpList[i].getLastAccessTime() > tmpList[index].getLastAccessTime()) {
 						index = i;
@@ -110,7 +110,7 @@ public class Cache extends BaseCache {
 				fencePost = true;
 			}
 
-			sb.append(String.format("%s(%s)", getTag(address), address.getLastAccessTime()));
+			sb.append(String.format("%s(%s)", Integer.toHexString(getTag(address)), address.getLastAccessTime()));
 		}
 		return sb.toString();
 	}
@@ -118,7 +118,7 @@ public class Cache extends BaseCache {
 	public void printLastAccess() {
 		System.out.format(Main.FORMAT, lastAddress, // address
 				getLastTag(), // tag
-				getLastBlock(), // block
+				getLastBlock(), // set
 				wasLastHit() ? "hit" : "miss", // hit/miss
 				hits, // hits
 				misses, // misses

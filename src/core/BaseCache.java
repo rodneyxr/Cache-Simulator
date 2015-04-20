@@ -36,12 +36,13 @@ public class BaseCache {
 		this.NUMBER_OF_SETS = cacheSize / setSize;
 
 		this.addresses = new MemoryAddress[numberOfBlocks][ASSOCIATIVITY];
-		this.INDEX_BITS = log(numberOfBlocks, 2);
+		this.INDEX_BITS = log(NUMBER_OF_SETS, 2);//log(numberOfBlocks, 2);
 		this.OFFSET_BITS = log2BlockSize;
 		this.TAG_BITS = 32 - INDEX_BITS - OFFSET_BITS;
 		this.hits = 0;
 		this.misses = 0;
 		this.accesses = 0;
+		System.out.printf("assoc=%d tag=%d index=%d offset=%d\n",ASSOCIATIVITY, TAG_BITS, INDEX_BITS, OFFSET_BITS);
 	}
 
 	protected void access(MemoryAddress address) {

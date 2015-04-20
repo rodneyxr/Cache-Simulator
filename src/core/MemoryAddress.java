@@ -38,6 +38,10 @@ public class MemoryAddress {
 	public String getBitString() {
 		return bitString;
 	}
+	
+	public int getAddress() {
+		return address;
+	}
 
 	private static boolean isDecimal(String s) {
 		return s.matches(DEC_REGEX);
