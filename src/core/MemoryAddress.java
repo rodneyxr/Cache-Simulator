@@ -1,6 +1,6 @@
 package core;
 
-public class MemoryAddress {
+public class MemoryAddress implements Comparable<MemoryAddress> {
 
 	private static final String DEC_REGEX = "^[0-9]+$";
 	private static final String HEX_REGEX = "^(0[xX])?[0-9a-fA-F]+$";
@@ -8,6 +8,7 @@ public class MemoryAddress {
 
 	private int address;
 	private String bitString;
+	private int tag;
 	private int lastAccessTime = 0;
 
 	public MemoryAddress(String memoryAddress) throws MemoryAddressException {
@@ -38,9 +39,17 @@ public class MemoryAddress {
 	public String getBitString() {
 		return bitString;
 	}
-	
+
 	public int getAddress() {
 		return address;
+	}
+	
+	public int getTag() {
+		return tag;
+	}
+	
+	public void setTag(int tag) {
+		this.tag = tag;
 	}
 
 	private static boolean isDecimal(String s) {
@@ -54,13 +63,21 @@ public class MemoryAddress {
 	public static boolean isValid(String s) {
 		return (isHex(s) || isDecimal(s)) && !s.contains("-");
 	}
-	
+
 	public int getLastAccessTime() {
 		return lastAccessTime;
 	}
-	
+
 	public void setLastAccessTime(int lastAccessTime) {
 		this.lastAccessTime = lastAccessTime;
+	}
+
+	public int compareTo(MemoryAddress other) {
+		if (getTag() < other.getTag())
+			return -1;
+		if (other.getTag() == getTag())
+			return 0;
+		return 1;
 	}
 
 	@Override

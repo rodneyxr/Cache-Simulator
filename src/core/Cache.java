@@ -1,5 +1,9 @@
 package core;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class Cache extends BaseCache {
 
 	private int lastTag;
@@ -18,6 +22,7 @@ public class Cache extends BaseCache {
 		super.access(address);
 		lastAddress = address;
 		lastTag = getTag(address);
+		address.setTag(lastTag);
 		int blockPosition = getBlockPosition(address);
 		lastBlockAddress = blockPosition % NUMBER_OF_SETS;
 		MemoryAddress[] tmpList = addresses[lastBlockAddress];
@@ -109,9 +114,13 @@ public class Cache extends BaseCache {
 
 	public String getLastEntryTags() {
 		StringBuilder sb = new StringBuilder();
+		List<MemoryAddress> sortedList = new ArrayList<MemoryAddress>(ASSOCIATIVITY);
+		for (MemoryAddress address : lastAddressList)
+			if (address != null)
+				sortedList.add(address);
+		Collections.sort(sortedList);
 		boolean fencePost = false;
-
-		for (MemoryAddress address : lastAddressList) {
+		for (MemoryAddress address : sortedList) {
 			if (address == null)
 				break;
 
