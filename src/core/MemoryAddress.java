@@ -24,12 +24,14 @@ public class MemoryAddress implements Comparable<MemoryAddress> {
 		}
 
 		if (address < 0)
-			throw new MemoryAddressException("Memory address cannot be negative.");
+			throw new MemoryAddressException(
+					"Memory address cannot be negative.");
 
 		String bitString = Integer.toBinaryString(address);
 
 		if (bitString.length() > 32)
-			throw new MemoryAddressException("Memory address cannot be greater than 32 bits.");
+			throw new MemoryAddressException(
+					"Memory address cannot be greater than 32 bits.");
 
 		StringBuilder sb = new StringBuilder(ZERO_BITS);
 		sb.replace(sb.length() - bitString.length(), sb.length(), bitString);
@@ -43,11 +45,11 @@ public class MemoryAddress implements Comparable<MemoryAddress> {
 	public int getAddress() {
 		return address;
 	}
-	
+
 	public int getTag() {
 		return tag;
 	}
-	
+
 	public void setTag(int tag) {
 		this.tag = tag;
 	}

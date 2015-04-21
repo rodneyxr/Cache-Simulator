@@ -12,7 +12,8 @@ public class Cache extends BaseCache {
 	private MemoryAddress lastAddress;
 	private MemoryAddress[] lastAddressList;
 
-	public Cache(int cacheSize, int blockSize, int associativity, ReplacementPolicy replacementPolicy) {
+	public Cache(int cacheSize, int blockSize, int associativity,
+			ReplacementPolicy replacementPolicy) {
 		super(cacheSize, blockSize, associativity, replacementPolicy);
 		lastTag = EMPTY;
 	}
@@ -89,14 +90,16 @@ public class Cache extends BaseCache {
 		} else if (RP == ReplacementPolicy.LRU) {
 			// replace last used
 			for (int i = 0; i < ASSOCIATIVITY; i++) {
-				if (tmpList[i].getLastAccessTime() > tmpList[index].getLastAccessTime()) {
+				if (tmpList[i].getLastAccessTime() > tmpList[index]
+						.getLastAccessTime()) {
 					index = i;
 				}
 			}
 		} else if (RP == ReplacementPolicy.FIFO) {
 			// find oldest block and set replace index
 			for (int i = 0; i < ASSOCIATIVITY; i++) {
-				if (tmpList[i].getLastAccessTime() > tmpList[index].getLastAccessTime()) {
+				if (tmpList[i].getLastAccessTime() > tmpList[index]
+						.getLastAccessTime()) {
 					index = i;
 				}
 			}
@@ -114,7 +117,8 @@ public class Cache extends BaseCache {
 
 	public String getLastEntryTags() {
 		StringBuilder sb = new StringBuilder();
-		List<MemoryAddress> sortedList = new ArrayList<MemoryAddress>(ASSOCIATIVITY);
+		List<MemoryAddress> sortedList = new ArrayList<MemoryAddress>(
+				ASSOCIATIVITY);
 		for (MemoryAddress address : lastAddressList)
 			if (address != null)
 				sortedList.add(address);
@@ -130,7 +134,9 @@ public class Cache extends BaseCache {
 				fencePost = true;
 			}
 
-			sb.append(String.format("%s(%s)", Integer.toHexString(getTag(address)), address.getLastAccessTime()));
+			sb.append(String.format("%s(%s)",
+					Integer.toHexString(getTag(address)),
+					address.getLastAccessTime()));
 		}
 		return sb.toString();
 	}

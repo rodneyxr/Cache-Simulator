@@ -8,8 +8,10 @@ import java.io.IOException;
 import core.MemoryAddress.MemoryAddressException;
 
 /**
- * A simple cache simulation program for a direct mapped cache. It will take 6 command-line parameters giving the size of the cache, the block size, a trace flag, and a file name
- * giving the name of a file containing memory addresses. The program will simulate the cache and calculate the miss ratio.
+ * A simple cache simulation program for a direct mapped cache. It will take 6
+ * command-line parameters giving the size of the cache, the block size, a trace
+ * flag, and a file name giving the name of a file containing memory addresses.
+ * The program will simulate the cache and calculate the miss ratio.
  * 
  * @author Rodney Rodriguez
  *
@@ -17,7 +19,7 @@ import core.MemoryAddress.MemoryAddressException;
 public class Main {
 
 	public static final String FORMAT = "%8s %8s %8s %5s %8s %8s %10s %11s %s\n";
-	
+
 	// 16 6 0 fifo on memory-small.txt
 	public static void main(String[] args) {
 		if (args.length != 6) {
@@ -95,15 +97,15 @@ public class Main {
 			error(e.getMessage());
 		}
 
-		Cache cache = new Cache(cacheSize, blockSize, associativity, replacementPolicy);
+		Cache cache = new Cache(cacheSize, blockSize, associativity,
+				replacementPolicy);
 
 		BufferedReader buffer = new BufferedReader(fileReader);
 		String line;
 
-		
-
 		if (isTracing) {
-			System.out.format(FORMAT, "address", "tag", "set", "h/m", "hits", "misses", "accesses", "miss_ratio", "tags");
+			System.out.format(FORMAT, "address", "tag", "set", "h/m", "hits",
+					"misses", "accesses", "miss_ratio", "tags");
 		}
 
 		try {
@@ -128,7 +130,8 @@ public class Main {
 		}
 
 		System.out.println("Rodney Rodriguez");
-		System.out.format("%s %s %s %s %s %s\n", args[0], args[1], args[2], args[3], args[4], args[5]);
+		System.out.format("%s %s %s %s %s %s\n", args[0], args[1], args[2],
+				args[3], args[4], args[5]);
 		System.out.format("memory accesses: %d\n", cache.accesses);
 		System.out.format("hits: %d\n", cache.hits);
 		System.out.format("misses: %d\n", cache.misses);

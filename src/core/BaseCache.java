@@ -4,15 +4,10 @@ public class BaseCache {
 
 	public static final byte EMPTY = -1;
 
-	// private final int CACHE_SIZE; // the number of bytes in the cache
-	// private final int BLOCK_SIZE; // the number of bytes in a block
-	// private final int SET_SIZE; // the number of bytes in a set
 	protected final int ASSOCIATIVITY;
 	protected final ReplacementPolicy RP;
 
-	// protected final int NUMBER_OF_BLOCKS; // the number of blocks in the cache
 	protected final int NUMBER_OF_SETS; // the number of sets in the cache
-//	protected final int BLOCKS_PER_SET;
 	protected final MemoryAddress[][] addresses;
 
 	protected final int TAG_BITS;
@@ -25,10 +20,11 @@ public class BaseCache {
 
 	private boolean wasLastHit;
 
-	public BaseCache(int log2CacheSize, int log2BlockSize, int log2Associativity, ReplacementPolicy replacementPolicy) {
+	public BaseCache(int log2CacheSize, int log2BlockSize,
+			int log2Associativity, ReplacementPolicy replacementPolicy) {
 		this.ASSOCIATIVITY = (int) Math.pow(2, log2Associativity);
 		this.RP = replacementPolicy;
-		
+
 		int cacheSize = (int) Math.pow(2, log2CacheSize);
 		int blockSize = (int) Math.pow(2, log2BlockSize);
 		int numberOfBlocks = cacheSize / blockSize;
@@ -36,13 +32,12 @@ public class BaseCache {
 		this.NUMBER_OF_SETS = cacheSize / setSize;
 
 		this.addresses = new MemoryAddress[numberOfBlocks][ASSOCIATIVITY];
-		this.INDEX_BITS = log(NUMBER_OF_SETS, 2);//log(numberOfBlocks, 2);
+		this.INDEX_BITS = log(NUMBER_OF_SETS, 2);
 		this.OFFSET_BITS = log2BlockSize;
 		this.TAG_BITS = 32 - INDEX_BITS - OFFSET_BITS;
 		this.hits = 0;
 		this.misses = 0;
 		this.accesses = 0;
-		System.out.printf("assoc=%d tag=%d index=%d offset=%d\n",ASSOCIATIVITY, TAG_BITS, INDEX_BITS, OFFSET_BITS);
 	}
 
 	protected void access(MemoryAddress address) {
@@ -73,7 +68,8 @@ public class BaseCache {
 		if (TAG_BITS + INDEX_BITS == 0)
 			return 0;
 		int blockPositition = EMPTY;
-		blockPositition = Integer.valueOf(address.getBitString().substring(0, TAG_BITS + INDEX_BITS), 2);
+		blockPositition = Integer.valueOf(
+				address.getBitString().substring(0, TAG_BITS + INDEX_BITS), 2);
 		return blockPositition;
 	}
 
@@ -91,7 +87,8 @@ public class BaseCache {
 		int index = EMPTY;
 		int start = TAG_BITS;
 		int end = start + INDEX_BITS;
-		index = Integer.valueOf(address.getBitString().substring(start, end), 2);
+		index = Integer
+				.valueOf(address.getBitString().substring(start, end), 2);
 		return index;
 	}
 
@@ -101,7 +98,8 @@ public class BaseCache {
 		int offset = EMPTY;
 		int start = TAG_BITS + INDEX_BITS;
 		int end = start + OFFSET_BITS;
-		offset = Integer.valueOf(address.getBitString().substring(start, end), 2);
+		offset = Integer.valueOf(address.getBitString().substring(start, end),
+				2);
 		return offset;
 	}
 
@@ -109,8 +107,4 @@ public class BaseCache {
 		return (int) Math.ceil((Math.log(x) / Math.log(base)));
 	}
 
-	// @Override
-	// public String toString() {
-	// return String.format("[cacheSize=%d, blockSize=%d, numberOfBlocks=%d]", CACHE_SIZE, BLOCK_SIZE, NUMBER_OF_BLOCKS);
-	// }
 }
